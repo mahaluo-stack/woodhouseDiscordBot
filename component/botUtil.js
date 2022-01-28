@@ -8,7 +8,6 @@ const es = require('event-stream');
 
 module.exports = {
     createChannels: async function (guild) {
-        let category;
 
         guild.channels.create('WOODHOUSE', {
             type: 'GUILD_CATEGORY',
@@ -23,7 +22,7 @@ module.exports = {
                     'MANAGE_MESSAGES'
                 ]
             }]
-        }).catch((error) => { this.error(guild.id, error) })
+        })
             .then((res) => {
                 guild.channels.create('how-to-woodhouse', {
                     type: 'text',
@@ -37,10 +36,9 @@ module.exports = {
                         ]
                     }],
                     parent: res.id
-                }).catch((error) => { this.error(guild.id, error) })
-                    .then((res) => {
-                        res.send({ embeds: [embeds.howTo()] });
-                    });
+                })
+                    .then((res) => { res.send({ embeds: [embeds.howTo()] }) })
+                    .catch((error) => { this.error(guild.id, error) })
 
                 guild.channels.create('woodhouses-bosses', {
                     type: 'text',
@@ -54,10 +52,9 @@ module.exports = {
                         ]
                     }],
                     parent: res.id
-                }).catch((error) => { this.error(guild.id, error) })
-                    .then((res) => {
-                        res.send({ embeds: [embeds.bosses()] });
-                    });
+                })
+                    .then((res) => { res.send({ embeds: [embeds.bosses()] }) })
+                    .catch((error) => { this.error(guild.id, error) })
 
                 guild.channels.create('woodhouses-quests', {
                     type: 'text',
@@ -71,19 +68,11 @@ module.exports = {
                         ]
                     }],
                     parent: res.id
-                }).catch((error) => { this.error(guild.id, error) })
-                    .then((res) => {
-                        res.send({ embeds: [embeds.quests()] });
-                    });
-            });
-    },
-    cleanChannel: async function (channel) {
-        (async () => {
-            let deleted;
-            do {
-                deleted = await channel.bulkDelete(100);
-            } while (deleted.size != 0);
-        })();
+                })
+                    .then((res) => { res.send({ embeds: [embeds.quests()] }) })
+                    .catch((error) => { this.error(guild.id, error) })
+            })
+            .catch((error) => { this.error(guild.id, error) })
     },
     writeToSession: async function (sessionItem) {
 
@@ -92,13 +81,13 @@ module.exports = {
         if (fs.existsSync(filePath)) {
 
             this.readFromSession()
-            .then((res) => {
-                console.log('read res:',res);
-                string = string + ',\n' + JSON.stringify(res);
-            })
-            .catch((error) => {
-                this.error('read file failed', error);
-            })
+                .then((res) => {
+                    console.log('read res:', res);
+                    string = string + ',\n' + JSON.stringify(res);
+                })
+                .catch((error) => {
+                    this.error('read file failed', error);
+                })
         }
 
         fs.writeFileSync(filePath, string);

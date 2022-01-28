@@ -13,11 +13,10 @@ client.login(process.env.TOKEN);
 client.on('guildCreate', (guild) => {
     console.log(`woodhouse joined a new guild: ${guild.name}`);
     console.log('woodhouse: i shall fetch a rug');
+
     botUtil.createChannels(guild)
+        .then(() => { console.log('woodhouse: all channels are up, sir') })
         .catch((error) => botUtil.error(guild.id, error))
-        .then(() => {
-            console.log('woodhouse: all channels are up, sir');
-        })
 });
 
 client.on('ready', () => {
@@ -39,22 +38,16 @@ client.on('messageCreate', (message) => {
                 messageHandler.format(message)
                     .then((res) => {
                         if (res) {
+
                             message.channel.send({ embeds: [res] });
 
-                            botUtil.writeToSession({
-                                guild: message.guild.id,
-                                res,
-                            })
-                            .then(() => {
-                                console.log('added to session');
-                            })
-                            .catch((error) => { botUtil.error(message.guild.id, error) });
+                            botUtil.writeToSession({ guild: message.guild.id, res })
+                                .then(() => { console.log('added to session') })
+                                .catch((error) => { botUtil.error(message.guild.id, error) });
                         }
                     })
                     .catch((error) => { botUtil.error(message.guild.id, error) })
-                    .finally(() => {
-                        message.delete();
-                    });
+                    .finally(() => { message.delete() });
                 break;
             default:
                 return;
@@ -70,10 +63,6 @@ client.on('messageReactionAdd', (reaction, user) => {
         case 'woodhouses-bosses':
         case 'woodhouses-quests':
             messageHandler.handleReaction(reaction, user, true)
-                .catch((error) => {
-                    reaction.users.remove(user.id);
-                    botUtil.error(reaction.message.channel.id, error);
-                })
                 .then((res) => {
                     if (!res) {
                         reaction.users.remove(user.id);
@@ -81,6 +70,10 @@ client.on('messageReactionAdd', (reaction, user) => {
                     else {
                         reaction.message.edit({ embeds: [res] });
                     }
+                })
+                .catch((error) => {
+                    reaction.users.remove(user.id);
+                    botUtil.error(reaction.message.channel.id, error);
                 })
             break;
         default:
@@ -96,11 +89,11 @@ client.on('messageReactionRemove', (reaction, user) => {
         case 'woodhouses-bosses':
         case 'woodhouses-quests':
             messageHandler.handleReaction(reaction, user, false)
-                .catch((error) => {
-                    botUtil.error(reaction.message.channel.id, error);
-                })
                 .then((res) => {
                     reaction.message.edit({ embeds: [res] });
+                })
+                .catch((error) => {
+                    botUtil.error(reaction.message.channel.id, error);
                 })
                 .finally(() => {
                     reaction.users.remove(user.id);
