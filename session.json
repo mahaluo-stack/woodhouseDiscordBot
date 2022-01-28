@@ -1,0 +1,23 @@
+{
+    "guild": "936051460624494674",
+    "res": {
+        "color": "#d11c21",
+        "title": "forgotten knowledge final",
+        "author": {
+            "name": "madmax is doing"
+        },
+        "description": "\nblocker: \nblocker: \nhealer: \nhealer: \nhealer: \nhealer: \nfree: \nfree: \nfree: \nfree: \nfree: \nfree: \nfree: \nfree: \nfree: \n",
+        "fields": [
+            {
+                "name": "​",
+                "value": "**13/03**",
+                "inline": true
+            },
+            {
+                "name": "​",
+                "value": "**19:20**",
+                "inline": true
+            }
+        ]
+    }
+}
